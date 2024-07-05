@@ -1,211 +1,132 @@
 #include "mbed.h"
-#include "stdint.h"
-#define MAX_FAILED 10
 
-DigitalIn buttonUser1(D4);
-DigitalIn buttonUser2(D5);
-DigitalIn buttonUser3(D3);
+// Definición de pines
+DigitalOut led1(LED1);
+DigitalOut relay(D12);  // Asumiendo que el relé está conectado al pin D7
+DigitalOut buzzer(D11); // Asumiendo que el buzzer está conectado al pin D6
+DigitalIn button(BUTTON1, PullUp);
 
-DigitalOut ledUser1(D14);
-DigitalOut ledUser2(D15);
+static UnbufferedSerial serialComm(PB_10, PB_11);
 
-Timer timer;
-
-static UnbufferedSerial serialComm (D1, D0);
-
-bool buttonPressed1 = false;
-bool buttonPressed2 = false;
-bool buttonPressed3 = false;
-
-bool receiveMsg = false;
-bool confirmationReceived = false;
-
-bool overtime = false;
-
-int communicationFailedCount = 0;
-
-enum States{
+enum State {
+    OFF,
     MONITOR,
-    PANIC,
-    OFF
+    PANIC
 };
 
-States state;
-States last_state;
+State currentState = OFF;
+Timer timer;
+Timer panicTimer;
+bool buttonPressed = false;
 
-auto start = 0;
+void outputsOffSet();
+void handleMonitorState();
+void handlePanicState();
+void checkSerialInput();
+void checkButtonInput();
+void transitionToState(State newState);
 
-char checkMsg = '\0';
-char userMonitorMsg = 'm';
-char userPanicMsg = 'p';
-
-bool serialCommunicationLoop (char, char); 
-
-void buttonsRead (void);
-
-void monitorState (void);
-void panicState (void);
-void offState (void);
-
-int main()
-{
-    buttonUser1.mode(PullUp);
-    buttonUser2.mode(PullUp);
-    buttonUser3.mode(PullUp);
-
+int main() {
+    // Inicialización
     serialComm.baud(9600);
-    serialComm.format(
-        /* bits */ 8,
-        /* parity */ SerialBase::None,
-        /* stop bit */ 1
-    );
+    serialComm.format(8, BufferedSerial::None, 1);
+    serialComm.set_blocking(false);
 
-    state = OFF;
-
-    while (true) {
-        buttonsRead();
-        switch (state){
-            case 0:
-                monitorState();
-                break;
-            case 1:
-                panicState();
-                break;
-            case 2:
-                offState();
-                break;
-        }
-    }
-}
-
-void buttonsRead (void){
-
-    if (!buttonUser1 && !buttonPressed1) {
-        last_state = state;
-        state = MONITOR;
-        buttonPressed1 = true;
-    }else if (buttonUser1){
-        buttonPressed1 = false;
-    }
-
-    if(!buttonUser2 && !buttonPressed2) {
-        last_state = state;
-        state = PANIC;
-        buttonPressed2 = true;
-    }else if (buttonUser2){
-        buttonPressed2 = false;
-    }
+    timer.start();
+    currentState = OFF;
     
-    if (!buttonUser3 && !buttonPressed3){
-        last_state = state;
-        state = OFF;
-        buttonPressed3 = true;
-    }else if (buttonUser3){
-        buttonPressed3 = false;
-    }
-}
+    while (true) {
+        checkSerialInput();
+        checkButtonInput();
 
-void monitorState (void){
-    if (last_state == PANIC){
-        receiveMsg = false;
-        timer.stop();
-        last_state = state;
-    }
-
-    if (serialCommunicationLoop(userMonitorMsg, 'M')){
-        overtime = false;
-        timer.start();
-        start = chrono::duration_cast<chrono::milliseconds>(timer.elapsed_time()).count();
-    }
-
-    if (!receiveMsg){
-        serialComm.write(&userMonitorMsg, 1);
-        receiveMsg = true;
-        timer.start();
-        start = chrono::duration_cast<chrono::milliseconds>(timer.elapsed_time()).count();
-    } else if (serialComm.readable()){
-        serialComm.read(&checkMsg, 1);
-        if (checkMsg == 'M'){
-            communicationFailedCount = 0;
-            overtime = false;
-            start = chrono::duration_cast<chrono::milliseconds>(timer.elapsed_time()).count();
-        }else {
-            communicationFailedCount ++;
-        }
-        receiveMsg = false;
-    }
-
-    if ((communicationFailedCount > MAX_FAILED) || overtime){
-        ledUser2 = ledUser1;
-        if (chrono::duration_cast<chrono::milliseconds>(timer.elapsed_time()).count() > (start + 1000)){
-            ledUser1 = !ledUser1;
-            ledUser2 = !ledUser2;
-            start = chrono::duration_cast<chrono::milliseconds>(timer.elapsed_time()).count();
-        }
-       // ledUser2 = 1;
-       // ledUser1 = 1;
-    }else {
-        ledUser1 = 1;
-        ledUser2 = 0;
-        if (chrono::duration_cast<chrono::milliseconds>(timer.elapsed_time()).count() > (start + 5000)){
-            overtime = true;
-            start = chrono::duration_cast<chrono::milliseconds>(timer.elapsed_time()).count();
+        switch (currentState) {
+            case OFF:
+                outputsOffSet();
+                break;
+            case MONITOR:
+                handleMonitorState();
+                break;
+            case PANIC:
+                handlePanicState();
+                break;
         }
     }
 }
 
-void panicState (void){
-    if (last_state == MONITOR){
-        receiveMsg = false;
-        confirmationReceived = false;
-        communicationFailedCount = 0;
-        timer.stop();
-        last_state = state;
+void outputsOffSet() {
+    led1 = 0;
+    relay = 0;
+    buzzer = 0;
+
+    // Aquí la respuesta se maneja en checkSerialInput
+}
+
+void handleMonitorState() {
+    outputsOffSet();
+
+    if (chrono::duration_cast<chrono::milliseconds>(timer.elapsed_time()).count() > 5000) {
+        transitionToState(PANIC);
     }
-    if (!confirmationReceived){
-        if (!receiveMsg){
-            serialComm.write(&userPanicMsg, 1);
-            receiveMsg = true;
-            timer.start();
-            start = chrono::duration_cast<chrono::milliseconds>(timer.elapsed_time()).count();    
-        } else if (serialComm.readable()){
-            serialComm.read(&checkMsg, 1);
-            if (checkMsg == 'P'){
-                confirmationReceived = true;
-                communicationFailedCount = 0;
-                overtime = false;
-                timer.stop();
-            }else {
-                communicationFailedCount ++;
-                }
-            receiveMsg = false;
-        }
+}
+
+void handlePanicState() {
+    if (!panicTimer.elapsed_time().count()) {
+        panicTimer.start();
     }
 
-    if ((communicationFailedCount > MAX_FAILED) || overtime){
-        ledUser2 = ledUser1;
-        if (chrono::duration_cast<chrono::milliseconds>(timer.elapsed_time()).count() > (start + 1000)){
-            ledUser1 = !ledUser1;
-            ledUser2 = !ledUser2;
-            start = chrono::duration_cast<chrono::milliseconds>(timer.elapsed_time()).count();
-        }
-       // ledUser2 = 1;
-       // ledUser1 = 1;
-    }else {
-        ledUser2 = 1;
-        ledUser1 = 0;
-        if (chrono::duration_cast<chrono::milliseconds>(timer.elapsed_time()).count() > (start + 5000)){
-            overtime = true;
-            start = chrono::duration_cast<chrono::milliseconds>(timer.elapsed_time()).count();
+    int elapsed = chrono::duration_cast<chrono::seconds>(panicTimer.elapsed_time()).count();
+    if (elapsed < 20) {
+        led1 = elapsed % 2;
+        buzzer = elapsed % 2;
+    } else {
+        led1 = 1;
+        buzzer = 0;
+        relay = 1;
+    }
+}
+
+void checkSerialInput() {
+    if (serialComm.readable()) {
+        char ch;
+        if (serialComm.read(&ch, 1) > 0) {
+            switch (ch) {
+                case 'o':
+                    transitionToState(OFF);
+                    serialComm.write("O", 1);
+                    break;
+                case 'm':
+                    if (currentState == MONITOR) {
+                        serialComm.write("M", 1);
+                        timer.reset();
+                    } else {
+                        transitionToState(MONITOR);
+                        serialComm.write("M", 1);
+                        timer.reset();
+                    }
+                    break;
+                case 'p':
+                    transitionToState(PANIC);
+                    serialComm.write("P", 1);
+                    break;
+                default:
+                    // No se hace nada si el carácter no es reconocido
+                    break;
+            }
         }
     }
 }
 
-void offState (void){
-    ledUser1 = 0;
-    ledUser2 = 0;
-    communicationFailedCount = 0;
-    confirmationReceived = false;
-    receiveMsg = false;
-    timer.stop();
+void checkButtonInput() {
+    if (button == 0 && !buttonPressed) {
+        buttonPressed = true;
+        transitionToState(PANIC);
+    } else if (button == 1) {
+        buttonPressed = false;
+    }
+}
+
+void transitionToState(State newState) {
+    currentState = newState;
+    timer.reset();
+    panicTimer.reset();
 }
