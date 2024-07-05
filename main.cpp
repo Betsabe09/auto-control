@@ -1,31 +1,69 @@
+//=====[Bibliotecas]===========================================================
 #include "mbed.h"
 
-// Definición de pines
-DigitalOut led1(LED1);
-DigitalOut relay(D12);  // Asumiendo que el relé está conectado al pin D7
-DigitalOut buzzer(D11); // Asumiendo que el buzzer está conectado al pin D6
-DigitalIn button(BUTTON1, PullUp);
+//=====[Declaración e inicialización de objetos globales públicos]=============
+DigitalOut led1(LED1); /**< LED conectado al pin LED1 */
+DigitalOut relay(D12); /**< Relé conectado al pin D12 */
+DigitalOut buzzer(D11); /**< Buzzer conectado al pin D11 */
+DigitalIn button(BUTTON1, PullUp); /**< Botón conectado al pin BUTTON1 con resistencia PullUp */
+static UnbufferedSerial serialComm(PB_10, PB_11); /**< Comunicación serial sin buffer en los pines PB_10 y PB_11 */
 
-static UnbufferedSerial serialComm(PB_10, PB_11);
-
+//=====[Declaración e inicialización de variables globales públicas]===========
+/**
+ * @enum State
+ * @brief Enumera los posibles estados del sistema.
+ */
 enum State {
-    OFF,
-    MONITOR,
-    PANIC
+    OFF, /**< Estado apagado */
+    MONITOR, /**< Estado de monitoreo */
+    PANIC /**< Estado de pánico */
 };
 
-State currentState = OFF;
-Timer timer;
-Timer panicTimer;
-bool buttonPressed = false;
+State currentState = OFF; /**< Estado actual del sistema */
+Timer timer; /**< Timer para manejar el estado de monitoreo */
+Timer panicTimer; /**< Timer para manejar el estado de pánico */
+bool buttonPressed = false; /**< Indica si el botón ha sido presionado */
 
+//=====[Declaraciones (prototipos) de funciones públicas]=======================
+/**
+ * @brief Apaga todos los dispositivos de salida (LED, relé, buzzer).
+ * @param none
+ */
 void outputsOffSet();
+/**
+ * @brief Maneja el estado de monitoreo.
+ * @param none
+ */
 void handleMonitorState();
+/**
+ * @brief Maneja el estado de pánico.
+ * @param none
+ */
 void handlePanicState();
+/**
+ * @brief Verifica si hay entrada serial y maneja las transiciones de estado basadas en ella.
+ * @param none
+ */
 void checkSerialInput();
+/**
+ * @brief Verifica la entrada del botón y maneja la transición al estado de pánico.
+ * @param none
+ */
 void checkButtonInput();
+/**
+ * @brief Transiciona el sistema a un nuevo estado.
+ * @param newState El nuevo estado al que se transicionará.
+ */
 void transitionToState(State newState);
 
+//=====[Función principal, el punto de entrada del programa después de encender o resetear]========
+/**
+ * @brief Función principal que inicializa el sistema y maneja la máquina de estados.
+ * Llama a funciones para inicializar los objetos de entrada y salida declarados, e 
+ * implementar el comportamiento del sistema.
+ * @param none
+ * @return El valor de retorno representa el éxito de la aplicación.
+ */
 int main() {
     // Inicialización
     serialComm.baud(9600);
