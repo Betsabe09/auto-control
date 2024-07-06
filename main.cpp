@@ -1,12 +1,16 @@
-//=====[Bibliotecas]===========================================================
 #include "mbed.h"
+
+#define elapsed_t_s(x)    chrono::duration_cast<chrono::seconds>((x).elapsed_time()).count()
+
+#define TIME_FOR_OVERTIME 5      ///< Tiempo en milisegundos para considerar sobretiempo en la comunicación
+#define ALARM_TIME 20            ///< Tiempo en milisegundos para la alarma de aviso
 
 //=====[Declaración e inicialización de objetos globales públicos]=============
 DigitalOut led1(LED1); /**< LED conectado al pin LED1 */
 DigitalOut relay(D12); /**< Relé conectado al pin D12 */
 DigitalOut buzzer(D11); /**< Buzzer conectado al pin D11 */
 DigitalIn button(BUTTON1, PullUp); /**< Botón conectado al pin BUTTON1 con resistencia PullUp */
-static UnbufferedSerial serialComm(PB_10, PB_11); /**< Comunicación serial sin buffer en los pines PB_10 y PB_11 */
+static UnbufferedSerial serialComm(D1, D0); /**< Comunicación serial sin buffer en los pines PB_10 y PB_11 */
 
 //=====[Declaración e inicialización de variables globales públicas]===========
 /**
@@ -20,9 +24,9 @@ enum State {
 };
 
 State currentState = OFF; /**< Estado actual del sistema */
-Timer timer; /**< Timer para manejar el estado de monitoreo */
-Timer panicTimer; /**< Timer para manejar el estado de pánico */
+Timer timer; /**< Timer para manejar el estado de monitoreo y pánico */
 bool buttonPressed = false; /**< Indica si el botón ha sido presionado */
+bool panicBlock = false; /**< Indica si el estado de pánico ha finalizado */
 
 //=====[Declaraciones (prototipos) de funciones públicas]=======================
 /**
@@ -102,21 +106,21 @@ void outputsOffSet() {
 void handleMonitorState() {
     outputsOffSet();
 
-    if (chrono::duration_cast<chrono::milliseconds>(timer.elapsed_time()).count() > 5000) {
+    if (elapsed_t_s(timer) > TIME_FOR_OVERTIME) {
         transitionToState(PANIC);
     }
 }
 
 void handlePanicState() {
-    if (!panicTimer.elapsed_time().count()) {
-        panicTimer.start();
-    }
-
-    int elapsed = chrono::duration_cast<chrono::seconds>(panicTimer.elapsed_time()).count();
-    if (elapsed < 20) {
+    int elapsed = elapsed_t_s(timer);
+    if (elapsed < ALARM_TIME) {
         led1 = elapsed % 2;
         buzzer = elapsed % 2;
     } else {
+        if(!panicBlock){
+            serialComm.write("P", 1);
+            panicBlock = true;
+        }
         led1 = 1;
         buzzer = 0;
         relay = 1;
@@ -127,36 +131,43 @@ void checkSerialInput() {
     if (serialComm.readable()) {
         char ch;
         if (serialComm.read(&ch, 1) > 0) {
-            switch (ch) {
-                case 'o':
-                    transitionToState(OFF);
-                    serialComm.write("O", 1);
-                    break;
-                case 'm':
-                    if (currentState == MONITOR) {
-                        serialComm.write("M", 1);
-                        timer.reset();
-                    } else {
-                        transitionToState(MONITOR);
-                        serialComm.write("M", 1);
-                        timer.reset();
-                    }
-                    break;
-                case 'p':
-                    transitionToState(PANIC);
-                    serialComm.write("P", 1);
-                    break;
-                default:
+            if (!panicBlock || ch == 'o'){
+                switch (ch) {
+                    case 'o':
+                        transitionToState(OFF);
+                        serialComm.write("O", 1);
+                        panicBlock = false;
+                        break;
+                    case 'm':
+                        if (currentState == MONITOR) {
+                            serialComm.write("M", 1);
+                            timer.reset();
+                        } else {
+                            transitionToState(MONITOR);
+                            serialComm.write("M", 1);
+                            timer.reset();
+                        }
+                        break;
+                    case 'p':
+                        transitionToState(PANIC);
+                        serialComm.write("P", 1);
+                        break;
+                    default:
                     // No se hace nada si el carácter no es reconocido
-                    break;
+                        break;
+                }
+            } else {
+                serialComm.write("P", 1);
             }
         }
     }
 }
 
 void checkButtonInput() {
-    if (button == 0 && !buttonPressed) {
+    if (button == 0 && !buttonPressed && !panicBlock) {
         buttonPressed = true;
+         panicBlock = true;
+         serialComm.write("P", 1);
         transitionToState(PANIC);
     } else if (button == 1) {
         buttonPressed = false;
@@ -165,6 +176,5 @@ void checkButtonInput() {
 
 void transitionToState(State newState) {
     currentState = newState;
-    timer.reset();
-    panicTimer.reset();
+    timer.reset(); // Reiniciar el temporizador en cada transición de estado
 }
