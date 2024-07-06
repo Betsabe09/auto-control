@@ -1,0 +1,529 @@
+\doxysection{Referencia del archivo main.\+cpp}
+\hypertarget{main_8cpp}{}\label{main_8cpp}\index{main.cpp@{main.cpp}}
+
+
+Programa para manejar el estado del sistema de seguridad dentro del vehículo. Abre o cierra un relé según el estado.  
+
+
+{\ttfamily \#include "{}mbed.\+h"{}}\newline
+\doxysubsubsection*{defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{main_8cpp_a457d8bc178b560f8ebb3b734480f28e1}{elapsed\+\_\+t\+\_\+s}}(x)~chrono\+::duration\+\_\+cast$<$chrono\+::seconds$>$((x).elapsed\+\_\+time()).count()
+\begin{DoxyCompactList}\small\item\em Macro para obtener el tiempo transcurrido en segundos desde el inicio de un timer. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8cpp_a5876a500afedd2b40bac024b88f30afe}{TIME\+\_\+\+FOR\+\_\+\+OVERTIME}}~5
+\begin{DoxyCompactList}\small\item\em Tiempo en segundos para considerar sobretiempo en la comunicación. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{main_8cpp_a12e3378d2254488c252961fea88e89ca}{ALARM\+\_\+\+TIME}}~20
+\begin{DoxyCompactList}\small\item\em Tiempo en segundos para la alarma de aviso. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumeraciones}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444}{States}} \{ \mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444aac132f2982b98bcaa3445e535a03ff75}{OFF}}
+, \mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444a92e8e1033650c9fd30199df2d6ec23e7}{MONITOR}}
+, \mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444a7f43a3db33f9e81462140f2b734e955b}{PANIC}}
+ \}
+\begin{DoxyCompactList}\small\item\em Enumera los posibles estados del sistema. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Funciones}
+\begin{DoxyCompactItemize}
+\item 
+Digital\+In \mbox{\hyperlink{main_8cpp_a0f28967c6aee75678e961275e065ff0d}{button}} (BUTTON1, Pull\+Up)
+\begin{DoxyCompactList}\small\item\em Botón conectado al pin BUTTON1 con resistencia Pull\+Up, correspondiente a la activación de PANIC. \end{DoxyCompactList}\item 
+Digital\+Out \mbox{\hyperlink{main_8cpp_a6b71ffd718e2af00cebeb05560b44be7}{led1}} (LED1)
+\begin{DoxyCompactList}\small\item\em LED conectado al pin LED1, indicador de alarma. \end{DoxyCompactList}\item 
+Digital\+Out \mbox{\hyperlink{main_8cpp_a143380ffa75db02df67e6c55246f4799}{relay}} (D12)
+\begin{DoxyCompactList}\small\item\em Relé conectado al pin D12, en el sistema este desconectaria o conectaría el motor del auto. \end{DoxyCompactList}\item 
+Digital\+Out \mbox{\hyperlink{main_8cpp_a302b801b788ffa232916f9fb13bf05eb}{buzzer}} (D11)
+\begin{DoxyCompactList}\small\item\em Buzzer conectado al pin D11, indicador de alarma. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a9c83968c1c406c5b20f4c6b14f74f5de}{outputs\+Off\+Set}} ()
+\begin{DoxyCompactList}\small\item\em Apaga todos los dispositivos de salida (LED, relé, buzzer). \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a71b3fe68424f96e92147d3692ddf76ed}{handle\+Monitor\+State}} ()
+\begin{DoxyCompactList}\small\item\em Maneja el estado de monitoreo. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a6fae1a12455ca198e32050c06cace659}{handle\+Panic\+State}} ()
+\begin{DoxyCompactList}\small\item\em Maneja el estado de pánico. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a2bf9100a0fea6b1cfa18a737f3ab876a}{process\+Communication}} ()
+\begin{DoxyCompactList}\small\item\em Procesa la comunicación serial entrante y gestiona las transiciones de estado. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a5ca27fcced85d872785fbc896cc2e132}{process\+Button\+Press}} ()
+\begin{DoxyCompactList}\small\item\em Procesa la presión del botón y maneja la transición de estado. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a61491903ab1762127a45ea94092726af}{transition\+To\+State}} (\mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444}{States}} new\+State)
+\begin{DoxyCompactList}\small\item\em Transiciona el sistema a un nuevo estado. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_ae3fffd4ca4ee0ca53c798586a3ee1a38}{process\+States}} ()
+\begin{DoxyCompactList}\small\item\em Maneja la lógica de comunicación, la presión del botón y la transición de estados. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{main_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}{main}} ()
+\begin{DoxyCompactList}\small\item\em Función principal del programa. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+Timer \mbox{\hyperlink{main_8cpp_aaf7e0389622e8f7b78393ee10d8e93a4}{timer}}
+\begin{DoxyCompactList}\small\item\em Timer para la temporización general. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444}{States}} \mbox{\hyperlink{main_8cpp_a372f8e4da4e6149314fd5c8dd8ae578b}{current\+State}} = \mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444aac132f2982b98bcaa3445e535a03ff75}{OFF}}
+\begin{DoxyCompactList}\small\item\em Estado actual del sistema. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{main_8cpp_ad7bcc039853173b3b20de0ecc031fcef}{is\+Panic\+Block}} = false
+\begin{DoxyCompactList}\small\item\em Indica si el estado de pánico se ha concretado o si se da prioridad al boton de PANIC. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Descripción detallada}
+Programa para manejar el estado del sistema de seguridad dentro del vehículo. Abre o cierra un relé según el estado. 
+
+\begin{DoxyAuthor}{Autor}
+Betsabe Ailen Rodriguez 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Documentación de «define»}
+\Hypertarget{main_8cpp_a12e3378d2254488c252961fea88e89ca}\index{main.cpp@{main.cpp}!ALARM\_TIME@{ALARM\_TIME}}
+\index{ALARM\_TIME@{ALARM\_TIME}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{ALARM\_TIME}{ALARM\_TIME}}
+{\footnotesize\ttfamily \label{main_8cpp_a12e3378d2254488c252961fea88e89ca} 
+\#define ALARM\+\_\+\+TIME~20}
+
+
+
+Tiempo en segundos para la alarma de aviso. 
+
+\Hypertarget{main_8cpp_a457d8bc178b560f8ebb3b734480f28e1}\index{main.cpp@{main.cpp}!elapsed\_t\_s@{elapsed\_t\_s}}
+\index{elapsed\_t\_s@{elapsed\_t\_s}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{elapsed\_t\_s}{elapsed\_t\_s}}
+{\footnotesize\ttfamily \label{main_8cpp_a457d8bc178b560f8ebb3b734480f28e1} 
+\#define elapsed\+\_\+t\+\_\+s(\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})~chrono\+::duration\+\_\+cast$<$chrono\+::seconds$>$((x).elapsed\+\_\+time()).count()}
+
+
+
+Macro para obtener el tiempo transcurrido en segundos desde el inicio de un timer. 
+
+Esta macro utiliza chrono\+::duration\+\_\+cast para convertir el tiempo transcurrido desde el inicio del timer {\ttfamily x} en segundos.
+
+
+\begin{DoxyParams}{Parámetros}
+{\em x} & El objeto timer del cual se desea obtener el tiempo transcurrido. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+El tiempo transcurrido en segundos como un valor entero. 
+\end{DoxyReturn}
+\Hypertarget{main_8cpp_a5876a500afedd2b40bac024b88f30afe}\index{main.cpp@{main.cpp}!TIME\_FOR\_OVERTIME@{TIME\_FOR\_OVERTIME}}
+\index{TIME\_FOR\_OVERTIME@{TIME\_FOR\_OVERTIME}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{TIME\_FOR\_OVERTIME}{TIME\_FOR\_OVERTIME}}
+{\footnotesize\ttfamily \label{main_8cpp_a5876a500afedd2b40bac024b88f30afe} 
+\#define TIME\+\_\+\+FOR\+\_\+\+OVERTIME~5}
+
+
+
+Tiempo en segundos para considerar sobretiempo en la comunicación. 
+
+
+
+\doxysubsection{Documentación de enumeraciones}
+\Hypertarget{main_8cpp_a808e5cd4979462d3bbe3070d7d147444}\index{main.cpp@{main.cpp}!States@{States}}
+\index{States@{States}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{States}{States}}
+{\footnotesize\ttfamily \label{main_8cpp_a808e5cd4979462d3bbe3070d7d147444} 
+enum \mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444}{States}}}
+
+
+
+Enumera los posibles estados del sistema. 
+
+\begin{DoxyEnumFields}{Valores de enumeraciones}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OFF@{OFF}!main.cpp@{main.cpp}}\index{main.cpp@{main.cpp}!OFF@{OFF}}}\Hypertarget{main_8cpp_a808e5cd4979462d3bbe3070d7d147444aac132f2982b98bcaa3445e535a03ff75}\label{main_8cpp_a808e5cd4979462d3bbe3070d7d147444} 
+OFF&Estado apagado. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MONITOR@{MONITOR}!main.cpp@{main.cpp}}\index{main.cpp@{main.cpp}!MONITOR@{MONITOR}}}\Hypertarget{main_8cpp_a808e5cd4979462d3bbe3070d7d147444a92e8e1033650c9fd30199df2d6ec23e7}\label{main_8cpp_a808e5cd4979462d3bbe3070d7d147444} 
+MONITOR&Estado de monitoreo. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PANIC@{PANIC}!main.cpp@{main.cpp}}\index{main.cpp@{main.cpp}!PANIC@{PANIC}}}\Hypertarget{main_8cpp_a808e5cd4979462d3bbe3070d7d147444a7f43a3db33f9e81462140f2b734e955b}\label{main_8cpp_a808e5cd4979462d3bbe3070d7d147444} 
+PANIC&Estado de pánico. \\
+\hline
+
+\end{DoxyEnumFields}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444aac132f2982b98bcaa3445e535a03ff75}{OFF}},\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00044\ \ \ \ \ \mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444a92e8e1033650c9fd30199df2d6ec23e7}{MONITOR}},\ \ \ \ }
+\DoxyCodeLine{00045\ \ \ \ \ \mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444a7f43a3db33f9e81462140f2b734e955b}{PANIC}}\ \ \ \ \ \ \ }
+\DoxyCodeLine{00046\ \};}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Documentación de funciones}
+\Hypertarget{main_8cpp_a0f28967c6aee75678e961275e065ff0d}\index{main.cpp@{main.cpp}!button@{button}}
+\index{button@{button}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{button()}{button()}}
+{\footnotesize\ttfamily \label{main_8cpp_a0f28967c6aee75678e961275e065ff0d} 
+Digital\+In button (\begin{DoxyParamCaption}\item[{BUTTON1}]{}{, }\item[{Pull\+Up}]{}{}\end{DoxyParamCaption})}
+
+
+
+Botón conectado al pin BUTTON1 con resistencia Pull\+Up, correspondiente a la activación de PANIC. 
+
+\Hypertarget{main_8cpp_a302b801b788ffa232916f9fb13bf05eb}\index{main.cpp@{main.cpp}!buzzer@{buzzer}}
+\index{buzzer@{buzzer}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{buzzer()}{buzzer()}}
+{\footnotesize\ttfamily \label{main_8cpp_a302b801b788ffa232916f9fb13bf05eb} 
+Digital\+Out buzzer (\begin{DoxyParamCaption}\item[{D11}]{}{}\end{DoxyParamCaption})}
+
+
+
+Buzzer conectado al pin D11, indicador de alarma. 
+
+\Hypertarget{main_8cpp_a71b3fe68424f96e92147d3692ddf76ed}\index{main.cpp@{main.cpp}!handleMonitorState@{handleMonitorState}}
+\index{handleMonitorState@{handleMonitorState}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{handleMonitorState()}{handleMonitorState()}}
+{\footnotesize\ttfamily \label{main_8cpp_a71b3fe68424f96e92147d3692ddf76ed} 
+void handle\+Monitor\+State (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Maneja el estado de monitoreo. 
+
+Apaga todas las salidas y verifica si ha transcurrido el tiempo máximo de monitoreo. Si se excede el tiempo límite, transiciona al estado de pánico.
+
+
+\begin{DoxyParams}{Parámetros}
+{\em none} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+void 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \mbox{\hyperlink{main_8cpp_a9c83968c1c406c5b20f4c6b14f74f5de}{outputsOffSet}}();}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00190\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{main_8cpp_a457d8bc178b560f8ebb3b734480f28e1}{elapsed\_t\_s}}(\mbox{\hyperlink{main_8cpp_aaf7e0389622e8f7b78393ee10d8e93a4}{timer}})\ >\ \mbox{\hyperlink{main_8cpp_a5876a500afedd2b40bac024b88f30afe}{TIME\_FOR\_OVERTIME}})\ \{}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_a61491903ab1762127a45ea94092726af}{transitionToState}}(\mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444a7f43a3db33f9e81462140f2b734e955b}{PANIC}});}
+\DoxyCodeLine{00192\ \ \ \ \ \}}
+\DoxyCodeLine{00193\ \}}
+
+\end{DoxyCode}
+\Hypertarget{main_8cpp_a6fae1a12455ca198e32050c06cace659}\index{main.cpp@{main.cpp}!handlePanicState@{handlePanicState}}
+\index{handlePanicState@{handlePanicState}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{handlePanicState()}{handlePanicState()}}
+{\footnotesize\ttfamily \label{main_8cpp_a6fae1a12455ca198e32050c06cace659} 
+void handle\+Panic\+State (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Maneja el estado de pánico. 
+
+En este estado se manifiesta una alarma y cuando esta concluye se bloquea el estado PANIC a menos que intencionalmente se apage Controla el parpadeo de los LEDs y el sonido del buzzer durante el estado de pánico. Si se excede el tiempo de alarma, activa el LED, desactiva el buzzer y activa el relé. Además, envía una señal serial \textquotesingle{}P\textquotesingle{} si no se ha bloqueado previamente.
+
+
+\begin{DoxyParams}{Parámetros}
+{\em none} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+void 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \textcolor{keywordtype}{int}\ elapsed\ =\ \mbox{\hyperlink{main_8cpp_a457d8bc178b560f8ebb3b734480f28e1}{elapsed\_t\_s}}(\mbox{\hyperlink{main_8cpp_aaf7e0389622e8f7b78393ee10d8e93a4}{timer}});}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keywordflow}{if}\ (elapsed\ <\ \mbox{\hyperlink{main_8cpp_a12e3378d2254488c252961fea88e89ca}{ALARM\_TIME}})\ \{}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_a6b71ffd718e2af00cebeb05560b44be7}{led1}}\ =\ elapsed\ \%\ 2;}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_a302b801b788ffa232916f9fb13bf05eb}{buzzer}}\ =\ elapsed\ \%\ 2;}
+\DoxyCodeLine{00200\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_a6b71ffd718e2af00cebeb05560b44be7}{led1}}\ =\ 1;}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_a302b801b788ffa232916f9fb13bf05eb}{buzzer}}\ =\ 0;}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_a143380ffa75db02df67e6c55246f4799}{relay}}\ =\ 1;}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{main_8cpp_ad7bcc039853173b3b20de0ecc031fcef}{isPanicBlock}})\ \{}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ serialComm.write(\textcolor{stringliteral}{"{}P"{}},\ 1);}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_ad7bcc039853173b3b20de0ecc031fcef}{isPanicBlock}}\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00208\ \ \ \ \ \}}
+\DoxyCodeLine{00209\ \}}
+
+\end{DoxyCode}
+\Hypertarget{main_8cpp_a6b71ffd718e2af00cebeb05560b44be7}\index{main.cpp@{main.cpp}!led1@{led1}}
+\index{led1@{led1}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{led1()}{led1()}}
+{\footnotesize\ttfamily \label{main_8cpp_a6b71ffd718e2af00cebeb05560b44be7} 
+Digital\+Out led1 (\begin{DoxyParamCaption}\item[{LED1}]{}{}\end{DoxyParamCaption})}
+
+
+
+LED conectado al pin LED1, indicador de alarma. 
+
+\Hypertarget{main_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}\index{main.cpp@{main.cpp}!main@{main}}
+\index{main@{main}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily \label{main_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4} 
+int main (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Función principal del programa. 
+
+Esta función inicializa los componentes necesarios, configura el puerto serial y el temporizador, y luego entra en un bucle infinito donde procesa los estados del sistema.
+
+\begin{DoxyReturn}{Devuelve}
+int El valor de retorno representa el éxito de la aplicación. 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00152\ \{}
+\DoxyCodeLine{00153\ \ \ \ \ \textcolor{comment}{//\ Inicialización\ del\ puerto\ serial}}
+\DoxyCodeLine{00154\ \ \ \ \ serialComm.baud(9600);\ \ \textcolor{comment}{//\ Configura\ la\ velocidad\ de\ baudios\ a\ 9600}}
+\DoxyCodeLine{00155\ \ \ \ \ serialComm.set\_blocking(\textcolor{keyword}{false});\ \ \textcolor{comment}{//\ Configura\ la\ comunicación\ serial\ como\ no\ bloqueante}}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00157\ \ \ \ \ \mbox{\hyperlink{main_8cpp_aaf7e0389622e8f7b78393ee10d8e93a4}{timer}}.start();\ \ \textcolor{comment}{//\ Inicia\ el\ temporizador}}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \ \ \textcolor{keywordflow}{while}\ (\textcolor{keyword}{true})\ \{}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_ae3fffd4ca4ee0ca53c798586a3ee1a38}{processStates}}();\ \ \textcolor{comment}{//\ Llamada\ a\ la\ función\ que\ maneja\ los\ estados\ del\ sistema}}
+\DoxyCodeLine{00161\ \ \ \ \ \}}
+\DoxyCodeLine{00162\ \}}
+
+\end{DoxyCode}
+\Hypertarget{main_8cpp_a9c83968c1c406c5b20f4c6b14f74f5de}\index{main.cpp@{main.cpp}!outputsOffSet@{outputsOffSet}}
+\index{outputsOffSet@{outputsOffSet}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{outputsOffSet()}{outputsOffSet()}}
+{\footnotesize\ttfamily \label{main_8cpp_a9c83968c1c406c5b20f4c6b14f74f5de} 
+void outputs\+Off\+Set (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Apaga todos los dispositivos de salida (LED, relé, buzzer). 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em none} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+void 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00182\ \ \ \ \ \mbox{\hyperlink{main_8cpp_a6b71ffd718e2af00cebeb05560b44be7}{led1}}\ =\ 0;}
+\DoxyCodeLine{00183\ \ \ \ \ \mbox{\hyperlink{main_8cpp_a143380ffa75db02df67e6c55246f4799}{relay}}\ =\ 0;}
+\DoxyCodeLine{00184\ \ \ \ \ \mbox{\hyperlink{main_8cpp_a302b801b788ffa232916f9fb13bf05eb}{buzzer}}\ =\ 0;}
+\DoxyCodeLine{00185\ \}}
+
+\end{DoxyCode}
+\Hypertarget{main_8cpp_a5ca27fcced85d872785fbc896cc2e132}\index{main.cpp@{main.cpp}!processButtonPress@{processButtonPress}}
+\index{processButtonPress@{processButtonPress}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{processButtonPress()}{processButtonPress()}}
+{\footnotesize\ttfamily \label{main_8cpp_a5ca27fcced85d872785fbc896cc2e132} 
+void process\+Button\+Press (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Procesa la presión del botón y maneja la transición de estado. 
+
+Esta función verifica el estado del botón y realiza las transiciones de estado apropiadas basadas en la presión del botón y el estado actual del sistema.
+
+
+\begin{DoxyItemize}
+\item Si el botón está presionado (button == false) y "{}is\+Button\+Pressed"{} es falso y "{}is\+Panic\+Block"{} es falso, establece "{}is\+Button\+Pressed"{} a verdadero, activa "{}is\+Panic\+Block"{}, envía \textquotesingle{}P\textquotesingle{} por el puerto serie y transiciona el estado del sistema a PANIC.
+\item la variable is\+Panic\+Block en esta funcion actúa para dar prioridad a PANIC sobre otros estados entrantes con excepción de OFF
+\item Si el botón no está presionado (button == true), establece "{}is\+Button\+Pressed"{} a falso.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parámetros}
+{\em none} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+void 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00248\ \ \ \ \ \textcolor{keywordtype}{bool}\ isButtonPressed\ =\ \textcolor{keyword}{false};\ \ \textcolor{comment}{//\ Variable\ local\ para\ la\ presión\ del\ botón}}
+\DoxyCodeLine{00249\ }
+\DoxyCodeLine{00250\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{main_8cpp_a0f28967c6aee75678e961275e065ff0d}{button}}\ ==\ 0\ \&\&\ !isButtonPressed\ \&\&\ !\mbox{\hyperlink{main_8cpp_ad7bcc039853173b3b20de0ecc031fcef}{isPanicBlock}})\ \{}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ isButtonPressed\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_ad7bcc039853173b3b20de0ecc031fcef}{isPanicBlock}}\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ serialComm.write(\textcolor{stringliteral}{"{}P"{}},\ 1);}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_a61491903ab1762127a45ea94092726af}{transitionToState}}(\mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444a7f43a3db33f9e81462140f2b734e955b}{PANIC}});}
+\DoxyCodeLine{00255\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{main_8cpp_a0f28967c6aee75678e961275e065ff0d}{button}}\ ==\ 1)\ \{}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ isButtonPressed\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00257\ \ \ \ \ \}}
+\DoxyCodeLine{00258\ \}}
+
+\end{DoxyCode}
+\Hypertarget{main_8cpp_a2bf9100a0fea6b1cfa18a737f3ab876a}\index{main.cpp@{main.cpp}!processCommunication@{processCommunication}}
+\index{processCommunication@{processCommunication}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{processCommunication()}{processCommunication()}}
+{\footnotesize\ttfamily \label{main_8cpp_a2bf9100a0fea6b1cfa18a737f3ab876a} 
+void process\+Communication (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Procesa la comunicación serial entrante y gestiona las transiciones de estado. 
+
+Lee un carácter de la comunicación serial y realiza las siguientes acciones según el carácter recibido\+:
+\begin{DoxyItemize}
+\item \textquotesingle{}o\textquotesingle{}\+: Transiciona al estado OFF y envía \textquotesingle{}O\textquotesingle{} por la comunicación serial.
+\item \textquotesingle{}m\textquotesingle{}\+: Si el estado actual es MONITOR, envía \textquotesingle{}M\textquotesingle{} y reinicia el temporizador; de lo contrario, transiciona a MONITOR y realiza lo mismo.
+\item \textquotesingle{}p\textquotesingle{}\+: Transiciona al estado PANIC y envía \textquotesingle{}P\textquotesingle{} por la comunicación serial.
+\item Otros caracteres\+: Si {\ttfamily is\+Panic\+Block} es verdadero, envía \textquotesingle{}P\textquotesingle{} por la comunicación serial.
+\end{DoxyItemize}
+
+Esta función maneja las transiciones de estado del sistema y las respuestas esperadas desde la comunicación serial. Si "{}is\+Panic\+Block"{} es verdadero y se recibe un carácter distinto de \textquotesingle{}o\textquotesingle{}, se envía \textquotesingle{}P\textquotesingle{} por la comunicación serial. La función no tiene efecto si no hay datos disponibles para lectura.
+
+
+\begin{DoxyParams}{Parámetros}
+{\em none} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+void 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00212\ \ \ \ \ \textcolor{keywordflow}{if}\ (serialComm.readable())\ \{}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ ch;}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (serialComm.read(\&ch,\ 1)\ >\ 0)\ \{}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{main_8cpp_ad7bcc039853173b3b20de0ecc031fcef}{isPanicBlock}}\ ||\ ch\ ==\ \textcolor{charliteral}{'o'})\ \{}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (ch)\ \{}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'o'}:}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_a61491903ab1762127a45ea94092726af}{transitionToState}}(\mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444aac132f2982b98bcaa3445e535a03ff75}{OFF}});}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ serialComm.write(\textcolor{stringliteral}{"{}O"{}},\ 1);}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_ad7bcc039853173b3b20de0ecc031fcef}{isPanicBlock}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'m'}:}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{main_8cpp_a372f8e4da4e6149314fd5c8dd8ae578b}{currentState}}\ ==\ \mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444a92e8e1033650c9fd30199df2d6ec23e7}{MONITOR}})\ \{}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ serialComm.write(\textcolor{stringliteral}{"{}M"{}},\ 1);}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_aaf7e0389622e8f7b78393ee10d8e93a4}{timer}}.reset();}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_a61491903ab1762127a45ea94092726af}{transitionToState}}(\mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444a92e8e1033650c9fd30199df2d6ec23e7}{MONITOR}});}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ serialComm.write(\textcolor{stringliteral}{"{}M"{}},\ 1);}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_aaf7e0389622e8f7b78393ee10d8e93a4}{timer}}.reset();}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'p'}:}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_a61491903ab1762127a45ea94092726af}{transitionToState}}(\mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444a7f43a3db33f9e81462140f2b734e955b}{PANIC}});}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ serialComm.write(\textcolor{stringliteral}{"{}P"{}},\ 1);}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ serialComm.write(\textcolor{stringliteral}{"{}P"{}},\ 1);}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00243\ \ \ \ \ \}}
+\DoxyCodeLine{00244\ \}}
+
+\end{DoxyCode}
+\Hypertarget{main_8cpp_ae3fffd4ca4ee0ca53c798586a3ee1a38}\index{main.cpp@{main.cpp}!processStates@{processStates}}
+\index{processStates@{processStates}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{processStates()}{processStates()}}
+{\footnotesize\ttfamily \label{main_8cpp_ae3fffd4ca4ee0ca53c798586a3ee1a38} 
+void process\+States (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Maneja la lógica de comunicación, la presión del botón y la transición de estados. 
+
+Llama a las funciones para procesar la comunicación serial y la presión de botones. Luego, ejecuta el manejo correspondiente según el estado actual del sistema.
+
+
+\begin{DoxyParams}{Parámetros}
+{\em none} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+void 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00165\ \ \ \ \ \mbox{\hyperlink{main_8cpp_a2bf9100a0fea6b1cfa18a737f3ab876a}{processCommunication}}();}
+\DoxyCodeLine{00166\ \ \ \ \ \mbox{\hyperlink{main_8cpp_a5ca27fcced85d872785fbc896cc2e132}{processButtonPress}}();}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \ \ \ \ \textcolor{keywordflow}{switch}\ (\mbox{\hyperlink{main_8cpp_a372f8e4da4e6149314fd5c8dd8ae578b}{currentState}})\ \{}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444aac132f2982b98bcaa3445e535a03ff75}{OFF}}:}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_a9c83968c1c406c5b20f4c6b14f74f5de}{outputsOffSet}}();}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444a92e8e1033650c9fd30199df2d6ec23e7}{MONITOR}}:}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_a71b3fe68424f96e92147d3692ddf76ed}{handleMonitorState}}();}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444a7f43a3db33f9e81462140f2b734e955b}{PANIC}}:}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_a6fae1a12455ca198e32050c06cace659}{handlePanicState}}();}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00178\ \ \ \ \ \}}
+\DoxyCodeLine{00179\ \}}
+
+\end{DoxyCode}
+\Hypertarget{main_8cpp_a143380ffa75db02df67e6c55246f4799}\index{main.cpp@{main.cpp}!relay@{relay}}
+\index{relay@{relay}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{relay()}{relay()}}
+{\footnotesize\ttfamily \label{main_8cpp_a143380ffa75db02df67e6c55246f4799} 
+Digital\+Out relay (\begin{DoxyParamCaption}\item[{D12}]{}{}\end{DoxyParamCaption})}
+
+
+
+Relé conectado al pin D12, en el sistema este desconectaria o conectaría el motor del auto. 
+
+\Hypertarget{main_8cpp_a61491903ab1762127a45ea94092726af}\index{main.cpp@{main.cpp}!transitionToState@{transitionToState}}
+\index{transitionToState@{transitionToState}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{transitionToState()}{transitionToState()}}
+{\footnotesize\ttfamily \label{main_8cpp_a61491903ab1762127a45ea94092726af} 
+void transition\+To\+State (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444}{States}}}]{new\+State}{}\end{DoxyParamCaption})}
+
+
+
+Transiciona el sistema a un nuevo estado. 
+
+Esta función actualiza el estado actual del sistema y reinicia el temporizador.
+
+
+\begin{DoxyParams}{Parámetros}
+{\em new\+State} & El nuevo estado al que se transicionará (OFF, MONITOR o PANIC). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+void 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00261\ \ \ \ \ \mbox{\hyperlink{main_8cpp_a372f8e4da4e6149314fd5c8dd8ae578b}{currentState}}\ =\ newState;}
+\DoxyCodeLine{00262\ \ \ \ \ \mbox{\hyperlink{main_8cpp_aaf7e0389622e8f7b78393ee10d8e93a4}{timer}}.reset();}
+\DoxyCodeLine{00263\ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Documentación de variables}
+\Hypertarget{main_8cpp_a372f8e4da4e6149314fd5c8dd8ae578b}\index{main.cpp@{main.cpp}!currentState@{currentState}}
+\index{currentState@{currentState}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{currentState}{currentState}}
+{\footnotesize\ttfamily \label{main_8cpp_a372f8e4da4e6149314fd5c8dd8ae578b} 
+\mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444}{States}} current\+State = \mbox{\hyperlink{main_8cpp_a808e5cd4979462d3bbe3070d7d147444aac132f2982b98bcaa3445e535a03ff75}{OFF}}}
+
+
+
+Estado actual del sistema. 
+
+\Hypertarget{main_8cpp_ad7bcc039853173b3b20de0ecc031fcef}\index{main.cpp@{main.cpp}!isPanicBlock@{isPanicBlock}}
+\index{isPanicBlock@{isPanicBlock}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{isPanicBlock}{isPanicBlock}}
+{\footnotesize\ttfamily \label{main_8cpp_ad7bcc039853173b3b20de0ecc031fcef} 
+bool is\+Panic\+Block = false}
+
+
+
+Indica si el estado de pánico se ha concretado o si se da prioridad al boton de PANIC. 
+
+\Hypertarget{main_8cpp_aaf7e0389622e8f7b78393ee10d8e93a4}\index{main.cpp@{main.cpp}!timer@{timer}}
+\index{timer@{timer}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{timer}{timer}}
+{\footnotesize\ttfamily \label{main_8cpp_aaf7e0389622e8f7b78393ee10d8e93a4} 
+Timer timer}
+
+
+
+Timer para la temporización general. 
+
